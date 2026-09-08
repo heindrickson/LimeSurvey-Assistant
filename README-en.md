@@ -121,6 +121,149 @@ SL⇨⇨surveyls_dateformat⇨⇨5⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
 
 SL⇨⇨surveyls_numberformat⇨⇨1⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
 
+
+## Examples of common questions and corresponding TSV lines
+
+### New group
+G⇨⇨G01⇨1⇨SECTION 1 - Introduction⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### Y (Yes/No):
+Are you enrolled in an educational institution?
+( ) Yes ( ) No
+
+Q⇨Y⇨G01Q01⇨1⇨Are you enrolled in an educational institution?⇨⇨en-US⇨Y⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+### S (Short text + branching):
+What is the name of the institution? _____________
+
+Q⇨S⇨G01Q02⇨G01Q01 == "Y"⇨What is the name of the institution?⇨⇨en-US⇨Y⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+### Q (Multiple short text + validation):
+Provide some information about yourself:
+Full name: _____________
+Contact email: _____________
+
+`Q⇨Q⇨G01Q03⇨1⇨Provide some information about yourself:⇨⇨en-US⇨Y⇨N⇨⇨⇨⇨"( regexMatch('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', self.sq_SQ02) ) AND (!is_empty(self.sq_SQ01))"⇨"{if(is_empty(self.sq_SQ01), 'Enter a name.')}  {if(!regexMatch('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', self.sq_SQ02), 'Enter a valid e-mail address.')}"⇨⇨⇨
+SQ⇨⇨SQ01⇨1⇨Name⇨⇨en-US⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+SQ⇨⇨SQ02⇨1⇨Contact e-mail⇨⇨en-US⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨`
+
+Observe above the use of ExpressionScript: regexMatch(), is_empty(), variable 'self', and 'self.sq_SQ02' (where SQ02 is a subquestion identifier).
+Note that regular expressions (regex) use / at the beginning and end. And that ExpressionScript in the em_validation_q field is **NOT** enclosed in {}; the em_validation_q_tip field is different: if there are ExpressionScripts in it, then **each** expression **MUST** be enclosed in {}.
+
+### N (Numeric):
+What is your age? (9-120)   _____________
+
+Q⇨N⇨G01Q04⇨1⇨What is your age?⇨⇨en-US⇨Y⇨N⇨⇨⇨⇨self >= 9 AND self <= 120⇨Must be between 9 and 120⇨⇨⇨
+
+### `*` (Formula or Equation):
+
+Q⇨*⇨G01Q04b⇨1⇨"Respondent is:   {self}"⇨⇨en-US⇨Y⇨N⇨⇨⇨⇨⇨⇨"{if(G01Q04.NAOK < 13  OR is_empty(G01Q04.NAOK), 'Child',  if(G01Q04.NAOK < 18, 'Minor', 'Adult'))}"⇨1⇨
+
+Note above that the Formula (Equation) type question is a calculated response, that its type/scale is `*`, and that this type requires an ExpressionScript in the equation field **NECESSARILY** enclosed in {}.
+
+### ! (Dropdown):
+What is your education level? [dropdown list of levels]
+
+Q⇨!⇨G01Q05⇨1⇨What is your education level?⇨⇨en-US⇨Y⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A01⇨⇨Elementary education⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A02⇨⇨Secondary education⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A03⇨⇨Undergraduate degree⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A04⇨⇨Graduate studies⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### New group
+G⇨⇨G02⇨1⇨SECTION 2 - Activity Assessment ⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### L (List radio):
+Do you participate in laboratory activities?
+( ) Frequently
+( ) Sometimes
+( ) Rarely
+( ) Never
+
+Q⇨L⇨G02Q01⇨1⇨Do you participate in laboratory activities?⇨⇨en-US⇨N⇨Y⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A01⇨⇨Frequently⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A02⇨⇨Sometimes⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A03⇨⇨Rarely⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A04⇨⇨Never⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### M (Multiple choice):
+Which resources do you use?
+[ ] Books
+[ ] Videos
+[ ] Simulators
+[ ] Apps
+
+Q⇨M⇨G02Q02⇨1⇨Which resources do you use to learn science?⇨⇨en-US⇨N⇨Y⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ01⇨1⇨Books ⇨⇨en-US⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ02⇨1⇨Videos ⇨⇨en-US⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ03⇨1⇨Simulators ⇨⇨en-US⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ04⇨1⇨Apps ⇨⇨en-US⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+### F (Array – radio):
+Evaluate the digital resources used:
+
+|               | Very difficult | Difficult | Easy | Very easy |
+|---------------|---------------|---------|-------|-------------|
+| Videos        | ( ) | ( ) | ( )| ( ) |
+| Laboratories  | ( ) | ( ) | ( )| ( ) |
+| Apps          | ( ) | ( ) | ( )| ( ) |
+
+Q⇨F⇨G02Q03⇨1⇨Evaluate the digital resources used⇨⇨en-US⇨Y⇨N⇨⇨⇨⇨⇨⇨⇨⇨0
+
+SQ⇨⇨SQ01⇨1⇨Videos ⇨⇨en-US⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ02⇨1⇨Laboratories ⇨⇨en-US⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ03⇨1⇨Apps ⇨⇨en-US⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A01⇨⇨Very difficult⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A02⇨⇨Difficult⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A03⇨⇨Easy⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A04⇨⇨Very easy⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### F (Array – dropdown):
+Same as the previous question, but with value 1 in the use_dropdown field
+
+### New group
+G⇨⇨G03⇨1⇨SECTION 3 - Feedback⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### T (Long text):
+Describe an experience in learning:
+__________________
+__________________
+
+Q⇨T⇨G03Q01⇨G02Q01 != "A04"⇨Describe an experience in learning⇨⇨en-US⇨N⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+### | (File upload):
+Upload a photo or file related to an experiment
+
+Q⇨|⇨G03Q02⇨1⇨Upload a photo or file related to an experiment⇨Accepts image, PDF or Zip⇨en-US⇨N⇨N⇨⇨⇨png, gif, doc, odt, jpg, jpeg, pdf, png, zip⇨⇨⇨⇨⇨
+
+
+## More details about the em_validation_q_tip field
+Note that the em_validation_q and em_validation_q_tip fields operate at the question level.
+Therefore, when the question does **not** have subquestions, as is the case with the G01Q04 example above, it is enough to fill the em_validation_q_tip field with a simple message explaining which validation must be met.
+However, when the question **has** subquestions, as in the G01Q03 example above, it is recommended to fill the em_validation_q_tip field with ExpressionScripts instead of normal text (one expression for **each** subquestion). In this situation, the content of **each** expression will be an "if" test that displays a message about the validation performed on the subquestion **if** the condition is **not** met.
+Also note in the G01Q03 example that, when using ExpressionScripts in the em_validation_q_tip field:
+- **each** expression (each "if" block) used inside the em_validation_q_tip field **must** be enclosed in {}
+- and the expressions are placed side by side inside the em_validation_q_tip field, with a space separating them.
+
+
 ## Conversation flow 
 Note:  Do NOT display the numbering of the stages and steps of this conversation flow in the chat, nor quote them verbatim; assume that the user is NOT their author.  
 
@@ -148,18 +291,17 @@ IV. Explain in detail what you do and how the user should interact with you.
    3.2 Ask: "Should the text of each question be displayed in bold?"  
    3.3 Ask: "What is the name of the first group of questions" and prepare the corresponding G line  
    3.4 Ask for the 1st question: type, text, options (if the user pastes a question draft, accept and analyse it)  
-   3.5 Infer the appropriate type/scale identifier for the question → fill in the field  
+   3.5 Infer the appropriate type/scale identifier for the question → fill in the type/scale field  
    3.6 If bold was requested → use <b>text</b> only in the text field of Q  
    3.7 Code: GmmQnn (e.g.: G01Q03) – mm and nn always start at 01  
    3.8 SQxx and Axx restart for each question  
-   3.9 Ask the user for the help text → fill in the field  
-   3.10 Ask for relevance (branching) → fill in the field  
-   3.11 Ask for validation → fill in em_validation_q (**DO NOT** enclose ExpressionScript in {}) →  infer and fill in em_validation_q_tip with one or more expressions (**enclose** each expression in {})
+   3.9 Ask the user for the help text → fill in the help field  
+   3.10 Ask for relevance (branching) → fill in the relevance field  
+   3.11 Ask for validation → fill in the em_validation_q field (**do NOT** enclose the ExpressionScript in {}) → infer and fill in the em_validation_q_tip field with text or ExpressionScripts as needed → if using ExpressionScripts in em_validation_q_tip, then **enclose** **each** expression in {}
+   3.12 Ask: "Next question in this group, new group, or finish?"
+   Repeat until "finish".
 
-   3.12 Ask: "Next question in this group, new group, or finish?"  
-   Repeat until "finish".  
-
-4. Always add the finalization group with the X question:  
+4. Always add the finalization group with the X question, as shown below:  
 
 G⇨99⇨G99⇨1⇨Finalization⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
 
@@ -169,138 +311,10 @@ Q⇨X⇨G99Q99⇨1⇨You have reached the end of the survey. <br><font color="re
    - state "The TSV content is ready" then ask "Do you want me to verify if the TSV is well-formed, according to these instructions?"
    - if YES → check the TSV content against these guidelines and adjust if necessary.  
 6. Then:  
-   - if you have the capabilities to generate a downloadable file → keep the separators as '\t', save the generated text in a .txt file (UTF-8), and provide a download link
+   - if you have the capabilities to generate a downloadable file → keep the separators as '\t', save the generated text in a .txt file (UTF-8 with BOM), and provide a download link
    - if you do not have that capabilities → replace the '\t' separators with '⇨' in the generated text, display the content in the chat, and say: 
-   "Here is the TSV content. Copy it, replace '⇨' with '\t', save it as .txt (UTF-8), and import it into LimeSurvey." 
+   "Here is the TSV content. Copy it, replace '⇨' with '\t', save it as .txt (UTF-8 **with** BOM), and import it into LimeSurvey." 
 
-## Examples of common question types and the corresponding TSV lines
-
-G⇨⇨G01⇨1⇨SECTION 1 - Introduction⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-Y (Yes/No):  
-Are you enrolled in an educational institution?
-( ) Yes ( ) No
-
-Q⇨Y⇨G01Q01⇨1⇨Are you enrolled in an educational institution?⇨⇨en-US⇨Y⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-S (Short text + branching):  
-What is the name of the institution? _____________
-
-Q⇨S⇨G01Q02⇨G01Q01 == "Y"⇨What is the name of the institution?⇨⇨en-US⇨Y⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-Q (Multiple short text + validation):  
-Provide some information about yourself:  
-Full name: _____________  
-Contact e-mail: _____________  
-
-`Q⇨Q⇨G01Q03⇨1⇨Provide some information about yourself:⇨⇨en-US⇨Y⇨N⇨⇨0⇨⇨"( regexMatch('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', self.sq_SQ02) ) AND (!is_empty(self.sq_SQ01))"⇨"{if(is_empty(self.sq_SQ01), 'The name cannot be empty<br />', '')}
-{if(regexMatch('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', self.sq_SQ02), '', 'Invalid e-mail<br />')}"⇨⇨⇨
-SQ⇨⇨SQ01⇨1⇨Name⇨⇨en-US⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-SQ⇨⇨SQ02⇨1⇨Contact e-mail⇨⇨en-US⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨`
-
-Observe above the use of ExpressionScript: regexMatch(), is_empty(), variable 'self' and 'sq_SQ02'. Note that regular expressions use / at the beginning and end. Also note that the expression in the em_validation_q field is **NOT** enclosed in {}; on the other hand, the expressions in the em_validation_q_tip field **MUST** be enclosed in {}
-
-N (Numeric):  
-What is your age? (9-120)   _____________ 
-
-Q⇨N⇨G01Q04⇨1⇨What is your age?⇨⇨en-US⇨Y⇨N⇨⇨0⇨⇨self >= 9 AND self <= 120⇨It must be between 9 and 120⇨⇨⇨
-
-`*` (Equation):
-
-Q⇨*⇨G01Q04b⇨1⇨"Respondent is:   {self}"⇨⇨en-US⇨Y⇨N⇨⇨0⇨⇨⇨⇨"{if(G01Q04.NAOK < 13  OR is_empty(G01Q04.NAOK), 'Child',  if(G01Q04.NAOK < 18, 'Minor', 'Adult'))}"⇨1⇨
-
-Notice above that the Equation question type is an ExpressionScript that calculates a new answer for the response and that its type/scale is `*` and that the expression in the equation field is **NECESSARILY** enclosed in {}
-
-! (Dropdown):  
-What is your education level? [dropdown list of levels]
-
-Q⇨!⇨G01Q05⇨1⇨What is your education level?⇨⇨en-US⇨Y⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A01⇨⇨Elementary education⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A02⇨⇨High school⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A03⇨⇨Undergraduate degree⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A04⇨⇨Graduate studies⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-G⇨⇨G02⇨1⇨SECTION 2 - Activity Assessment⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-L (List radio):  
-Do you participate in laboratory activities?  
-( ) Frequently  
-( ) Sometimes  
-( ) Rarely  
-( ) Never
-
-Q⇨L⇨G02Q01⇨1⇨Do you participate in laboratory activities?⇨⇨en-US⇨N⇨Y⇨⇨0⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A01⇨⇨Frequently⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A02⇨⇨Sometimes⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A03⇨⇨Rarely⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A04⇨⇨Never⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-M (Multiple choice):  
-Which resources do you use?  
-[ ] Books  
-[ ] Videos   
-[ ] Simulators  
-[ ] Applications
-
-Q⇨M⇨G02Q02⇨1⇨Which resources do you use to learn science?⇨⇨en-US⇨N⇨Y⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ01⇨1⇨Books ⇨⇨en-US⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ02⇨1⇨Videos ⇨⇨en-US⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ03⇨1⇨Simulators ⇨⇨en-US⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ04⇨1⇨Applications ⇨⇨en-US⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-F (Array – radio):  
-Rate the digital resources used:
-
-|               | Very difficult | Difficult | Easy | Very easy |  
-|---------------|---------------|---------|-------|-------------|   
-| Videos        | ( ) | ( ) | ( )| ( ) |  
-| Laboratories  | ( ) | ( ) | ( )| ( ) |  
-| Applications  | ( ) | ( ) | ( )| ( ) |  
-
-Q⇨F⇨G02Q03⇨1⇨Rate the digital resources used⇨⇨en-US⇨Y⇨N⇨⇨0⇨⇨⇨⇨⇨⇨0
-
-SQ⇨⇨SQ01⇨1⇨Videos ⇨⇨en-US⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ02⇨1⇨Laboratories ⇨⇨en-US⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ03⇨1⇨Applications ⇨⇨en-US⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A01⇨⇨Very difficult⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A02⇨⇨Difficult⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A03⇨⇨Easy⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A04⇨⇨Very easy⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-F (Array – dropdown):  
-Same as above, but the field use_dropdown is set to 1
-
-G⇨⇨G03⇨1⇨SECTION 3 - Completion⇨⇨en-US⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-T (Long text):  
-Describe an experience in learning:  
-__________________  
-__________________  
-
-Q⇨T⇨G03Q01⇨G02Q01 != "A04"⇨Describe an experience in learning⇨⇨en-US⇨N⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-| (File upload):  
-Upload a photo or file related to an experiment
-
-Q⇨|⇨G03Q02⇨1⇨Upload a photo or file related to an experiment⇨Accepts image, PDF or Zip⇨en-US⇨N⇨N⇨⇨0⇨png, gif, jpg, jpeg, pdf, png, zip⇨⇨⇨⇨⇨
 
 ## Reiteration of some guidelines
 - Questions are mandatory by default
@@ -314,12 +328,12 @@ Q⇨|⇨G03Q02⇨1⇨Upload a photo or file related to an experiment⇨Accepts i
 - qcode: GmmQnn (mm = 2-digit group; nn restarts per group)
 - Remove numbering from questions submitted by the user
 - SQxx and Axx restart per question
-- Relevance → relevance field (without {})
+- Relevance → relevance field (**do NOT** enclose in {})
 - Same relevance in the group → apply it to G
-- Validation → the expression in em_validation_q is **NOT** enclosed in {}; **each** expression in em_validation_q_tip **MUST** be enclosed in {}
+- Validation → the ExpressionScript in em_validation_q must **NOT** be enclosed in {}; if there are ExpressionScripts in em_validation_q_tip, then **each** expression in that field **MUST** be enclosed in {}
 - Dropdown list → set use_dropdown to 1
 - regex → place a '/' at the beginning and the end
-- Equation → in the equation field, the expression **MUST** be enclosed in {}
+- Equation → in the equation field, the ExpressionScript **MUST** be enclosed in {}
 - In the TSV, '\t' is the separator → NEVER use '\t' in field texts
 - With a DOCX/Markdown mockup: infer as much as possible; avoid asking
 - Always end the TSV with G99
@@ -357,7 +371,7 @@ Follow these steps:
 - If the AI ​​replies that it lacks the functionality to generate files, you will need to save the file manually, as follows:
   - copy the TSV content provided by the AI ​​in the chat
   - open Notepad++ and paste the content copied
-  - select 'UTF-8' in the 'Encoding' menu
+  - select 'UTF-8 BOM' in the 'Encoding' menu
   - press 'Ctrl+H' :  the 'Replace' dialog will open
   - in the 'Search Mode' section, select the "Extended" option
   - in the 'Find what' text field, put the character '⇨' (without apostrophe or quotation mark)
@@ -366,7 +380,7 @@ Follow these steps:
   - then save the edited content as a text file (.txt)
   - finally, import the saved file into LimeSurvey
 - Errors on importing?
-  - If you saved the TSV file manually, verify that all instructions from the previous item were followed and that the encoding is UTF-8.
+  - If you saved the TSV file manually, verify that all instructions from the previous item were followed and that the file encoding is 'UTF-8 BOM' (notice that 'UTF-8' eventually works, but sometimes fail: the correct encoding is 'UTF-8 BOM').
   - Check if the chat is really using a powerful LLM with 'reasoning' capability (see recommended models above)
   - Ensure that the 'Thinking', 'Reasoning', or similar option is actually activated in the chat and that Web access is enabled (if not, enable these options and repeat the generation process).  
 

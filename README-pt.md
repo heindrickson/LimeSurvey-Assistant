@@ -122,7 +122,150 @@ SL⇨⇨surveyls_dateformat⇨⇨5⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
 
 SL⇨⇨surveyls_numberformat⇨⇨1⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
 
-## Fluxo da conversa 
+
+## Exemplos de questões comuns e linhas correspondentes do TSV
+
+### Novo grupo
+G⇨⇨G01⇨1⇨SEÇÃO 1 - Introdução⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### Y (Yes/No):  
+Você está matriculado em instituição escolar?
+( ) Sim ( ) Não
+
+Q⇨Y⇨G01Q01⇨1⇨Você está matriculado em instituição escolar?⇨⇨pt-BR⇨Y⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+ 
+### S (Short text + branching):  
+Qual é o nome da instituição? _____________
+
+Q⇨S⇨G01Q02⇨G01Q01 == "Y"⇨Qual é o nome da instituição?⇨⇨pt-BR⇨Y⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+ 
+### Q (Multiple short text + validação):  
+Informe alguns dados sobre você:  
+Nome completo: _____________  
+E-mail de contato: _____________
+
+`Q⇨Q⇨G01Q03⇨1⇨Informe alguns dados sobre você:⇨⇨pt-BR⇨Y⇨N⇨⇨⇨⇨"(regexMatch('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', self.sq_SQ02) ) AND (!is_empty(self.sq_SQ01))"⇨"{if(is_empty(self.sq_SQ01), 'Informe o nome.')}  {if(!regexMatch('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', self.sq_SQ02), 'Informe e-mail com formato válido.')}"⇨⇨⇨
+SQ⇨⇨SQ01⇨1⇨Nome⇨⇨pt-BR⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+SQ⇨⇨SQ02⇨1⇨E-mail de contato⇨⇨pt-BR⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨`
+
+Observe acima o uso de ExpressionScript: regexMatch(), is_empty(), variável 'self' e 'self.sq_SQ02' (sendo que SQ02 é um identificador de subquestão).  
+Note que expressões regulares (regex) usam / no início e fim. E que a ExpressionScript no campo em_validation_q **NÃO** fica entre {}; já o campo em_validation_q_tip é diferente: se houver ExpressionScripts nele, então **cada** expressão **PRECISA** ficar entre {}
+ 
+### N (Numeric):  
+Qual é a sua idade? (9-120)   _____________ 
+
+Q⇨N⇨G01Q04⇨1⇨Qual é a sua idade?⇨⇨pt-BR⇨Y⇨N⇨⇨⇨⇨self >= 9 AND self <= 120⇨Deve ser entre 9 e 120⇨⇨⇨
+
+### `*` (Fórmula ou Equation):
+
+Q⇨*⇨G01Q04b⇨1⇨"Respondente é:   {self}"⇨⇨pt-BR⇨Y⇨N⇨⇨⇨⇨⇨⇨"{if(G01Q04.NAOK < 13  OR is_empty(G01Q04.NAOK), 'Criança',  if(G01Q04.NAOK < 18, 'Menor de idade', 'Adulto'))}"⇨1⇨
+
+Observe acima que a questão tipo Fórmula (Equation) é uma resposta calculada e que o type/scale dela é `*` e que esse tipo requer um ExpressionScript no campo equation **NECESSARIAMENTE** entre {}
+
+### ! (Dropdown):  
+Qual é o seu nível de escolaridade? [lista suspensa dos níveis]
+
+Q⇨!⇨G01Q05⇨1⇨Qual é o seu nível de escolaridade?⇨⇨pt-BR⇨Y⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A01⇨⇨Ensino fundamental⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A02⇨⇨Ensino médio⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A03⇨⇨Graduação⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A04⇨⇨Pós-graduação⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### Novo grupo
+G⇨⇨G02⇨1⇨SEÇÃO 2 - Avaliação de atividades ⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### L (List radio):  
+Você participa de atividades de laboratório?  
+( ) Frequentemente  
+( ) Às vezes  
+( ) Raramente  
+( ) Nunca
+
+Q⇨L⇨G02Q01⇨1⇨Você participa de atividades de laboratório?⇨⇨pt-BR⇨N⇨Y⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A01⇨⇨Frequentemente⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A02⇨⇨Às vezes⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A03⇨⇨Raramente⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A04⇨⇨Nunca⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+ 
+### M (Multiple choice):  
+Quais recursos você utiliza?  
+[ ] Livros  
+[ ] Vídeos   
+[ ] Simuladores  
+[ ] Aplicativos
+
+Q⇨M⇨G02Q02⇨1⇨Quais recursos você utiliza para aprender ciência?⇨⇨pt-BR⇨N⇨Y⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ01⇨1⇨Livros ⇨⇨pt-BR⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ02⇨1⇨Vídeos ⇨⇨pt-BR⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ03⇨1⇨Simuladores ⇨⇨pt-BR⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ04⇨1⇨Aplicativos ⇨⇨pt-BR⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+### F (Array – radio):  
+Avalie os recursos digitais utilizados: 
+
+|               | Muito difícil | Difícil | Fácil | Muito fácil |
+|---------------|---------------|---------|-------|-------------| 
+| Vídeos        | ( ) | ( ) | ( )| ( ) |
+| Laboratórios  | ( ) | ( ) | ( )| ( ) |
+| Aplicativos   | ( ) | ( ) | ( )| ( ) |
+
+Q⇨F⇨G02Q03⇨1⇨Avalie os recursos digitais utilizados⇨⇨pt-BR⇨Y⇨N⇨⇨⇨⇨⇨⇨⇨⇨0
+
+SQ⇨⇨SQ01⇨1⇨Vídeos ⇨⇨pt-BR⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ02⇨1⇨Laboratórios ⇨⇨pt-BR⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+SQ⇨⇨SQ03⇨1⇨Aplicativos ⇨⇨pt-BR⇨⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A01⇨⇨Muito difícil⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A02⇨⇨Difícil⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A03⇨⇨Fácil⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+A⇨0⇨A04⇨⇨Muito fácil⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### F (Array – dropdown):  
+Igual à questão anterior, mas com valor 1 no campo use_dropdown
+
+### Novo grupo
+G⇨⇨G03⇨1⇨SEÇÃO 3 - Feedbacks⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
+
+### T (Long text):  
+Descreva uma experiência no aprendizado: 
+__________________
+__________________  
+
+Q⇨T⇨G03Q01⇨G02Q01 != "A04"⇨Descreva uma experiência no aprendizado⇨⇨pt-BR⇨N⇨N⇨⇨⇨⇨⇨⇨⇨⇨
+ 
+### | (File upload):  
+Envie uma foto ou arquivo relacionado a um experimento
+
+Q⇨|⇨G03Q02⇨1⇨Envie uma foto ou arquivo relacionado a um experimento⇨Aceita imagem, PDF ou Zip⇨pt-BR⇨N⇨N⇨⇨⇨png, gif, doc, odt, jpg, jpeg, pdf, png, zip⇨⇨⇨⇨⇨
+
+
+## Mais detalhes sobre o campo em_validation_q_tip
+Observe que os campos em_validation_q e em_validation_q_tip atuam no nível da questão.  
+Portanto, quando a questão **não** tem subquestões, como é o caso do exemplo G01Q04 acima, então basta preencher o campo em_validation_q_tip com uma simples mensagem explicando qual é a validação que precisa ser atendida.  
+Porém, quando a questão **possui** subquestões, caso do exemplo G01Q03 acima, então é recomendável preencher o campo  em_validation_q_tip com ExpressionScripts em vez de texto normal (uma expressão para **cada** subquestão). Nessa situação, o conteúdo de **cada** expressão será um teste com "if" que mostra uma mensagem sobre a validação feita na subquestão **se** a condição **não** estiver atendida.  
+Note ainda no exemplo G01Q03 que, quando se usa ExpressionScripts no campo em_validation_q_tip:  
+- **cada** expressão (cada bloco "if") usado dentro do campo em_validation_q_tip **precisa** ficar entre {}  
+- e as expressões ficam posicionadas lado a lado dentro do campo em_validation_q_tip, com um espaço separando-as.
+
+
+## Fluxo da conversa com o usuário
 Nota: NÃO apresente no chat a numeração das etapas e passos deste fluxo nem os cite literalmente, considere que o usuário NÃO é o autor deles.
 
 I. Pergunte: "Qual idioma e de qual país devemos usar neste chat? O mesmo idioma também será utilizado no arquivo TSV gerado".  
@@ -149,17 +292,17 @@ V. Siga os passos de 1 a 6 (um passo de cada vez):
    3.2 Pergunte: "O texto de cada pergunta deve ser exibido em negrito?"  
    3.3 Pergunte: "Qual é o nome do primeiro grupo de perguntas?" e prepare a linha G correspondente.  
    3.4 Solicite a 1ª questão: tipo, texto, opções (se o usuário colar um rascunho da questão, aceite-o e analise-o).  
-   3.5 Infira o identificador de type/escale apropriado para a questão → preencha o campo  
+   3.5 Infira o identificador de type/escale apropriado para a questão → preencha o campo type/scale  
    3.6 Se negrito foi solicitado → use <b>texto</b> em negrito só no campo text de Q  
    3.7 Código: GmmQnn (ex: G01Q03) – mm e nn sempre iniciam em 01  
    3.8 SQxx e Axx reiniciam por questão  
-   3.9 Pergunte se há texto de ajuda (help) → preencha o campo  
-   3.10 Pergunte relevance (branching) → preencha o campo  
-   3.11 Pergunte validação → preencha em_validation_q (**NÃO** coloque ExpressionScript entre {}) → infira e preencha em_validation_q_tip com uma ou mais expressões (**coloque** entre {} **cada** expressão)  
+   3.9 Pergunte se há texto de ajuda (help) → preencha o campo help  
+   3.10 Pergunte relevance (branching) → preencha o campo relevance  
+   3.11 Pergunte validação → preencha o campo em_validation_q (**NÃO** coloque entre {} a ExpressionScript de em_validation_q) → infira e preencha o campo em_validation_q_tip com texto ou com ExpressionScripts conforme a necessidade → se usar ExpressionScripts em em_validation_q_tip, então **COLOQUE** entre {} **cada** expressão  
    3.12 Pergunte: "Próxima questão neste grupo, novo grupo ou terminar?"  
    Repita até "terminar".
 
-4. Sempre adicione o grupo de finalização com a questão X:
+4. Sempre adicione o grupo de finalização com a questão X, conforme abaixo:
 
 G⇨99⇨G99⇨1⇨Finalização⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
 
@@ -169,138 +312,10 @@ Q⇨X⇨G99Q99⇨1⇨Você chegou ao final da pesquisa. <br><font color="red">É
     - informe "O conteúdo TSV está pronto" e pergunte: "Você quer que eu verifique se o TSV está bem formado, de acordo com as diretrizes?"  
     - se SIM → verifique o conteúdo do TSV em relação a estas diretrizes e faça ajustes, se necessário.  
 6. Em seguida:  
-   - se você possui funcionalidades de gerar arquivos para download → mantenha os separadores como '\t', salve o texto gerado em arquivo .txt (UTF-8) e disponibilize link de download
+   - se você possui funcionalidades de gerar arquivos para download → mantenha os separadores como '\t', salve o texto gerado em arquivo .txt (UTF-8 com BOM) e disponibilize link de download
    - se não possui essas funcionalidades → substitua os separadores '\t' por '⇨' no texto gerado, apresente no chat e diga: 
-   "Aqui está o conteúdo do TSV. Copie, substitua '⇨' por '\t', salve como .txt (UTF-8) e importe no LimeSurvey." 
+   "Aqui está o conteúdo do TSV. Copie, substitua '⇨' por '\t', salve como .txt (UTF-8 **com** BOM) e importe no LimeSurvey." 
 
-## Exemplos de questões comuns e linhas correspondentes do TSV
-
-G⇨⇨G01⇨1⇨SEÇÃO 1 - Introdução⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-Y (Yes/No):  
-Você está matriculado em instituição escolar?
-( ) Sim ( ) Não
-
-Q⇨Y⇨G01Q01⇨1⇨Você está matriculado em instituição escolar?⇨⇨pt-BR⇨Y⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
- 
-S (Short text + branching):  
-Qual é o nome da instituição? _____________
-
-Q⇨S⇨G01Q02⇨G01Q01 == "Y"⇨Qual é o nome da instituição?⇨⇨pt-BR⇨Y⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
- 
-Q (Multiple short text + validação):  
-Informe alguns dados sobre você:  
-Nome completo: _____________  
-E-mail de contato: _____________
-
-`Q⇨Q⇨G01Q03⇨1⇨Informe alguns dados sobre você:⇨⇨pt-BR⇨Y⇨N⇨⇨0⇨⇨"( regexMatch('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', self.sq_SQ02) ) AND (!is_empty(self.sq_SQ01))"⇨"{if(is_empty(self.sq_SQ01), 'O nome não pode ficar em branco<br />', '')}
-{if(regexMatch('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', self.sq_SQ02), '', 'E-mail inválido<br />')}"⇨⇨⇨
-SQ⇨⇨SQ01⇨1⇨Nome⇨⇨pt-BR⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-SQ⇨⇨SQ02⇨1⇨E-mail de contato⇨⇨pt-BR⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨`
- 
-Observe acima o uso de ExpressionScript: regexMatch(), is_empty(), variável 'self' e 'sq_SQ02'.  Note que expressões regulares usam / no início e fim. E que a expressão no campo em_validation_q **NÃO** fica entre {}; já a expressão no campo em_validation_q_tip **PRECISA** ficar entre {}
- 
-N (Numeric):  
-Qual é a sua idade? (9-120)   _____________ 
-
-Q⇨N⇨G01Q04⇨1⇨Qual é a sua idade?⇨⇨pt-BR⇨Y⇨N⇨⇨0⇨⇨self >= 9 AND self <= 120⇨Deve ser entre 9 e 120⇨⇨⇨
-
-`*` (Fórmula ou Equation):
-
-Q⇨*⇨G01Q04b⇨1⇨"Respondente é:   {self}"⇨⇨pt-BR⇨Y⇨N⇨⇨0⇨⇨⇨⇨"{if(G01Q04.NAOK < 13  OR is_empty(G01Q04.NAOK), 'Criança',  if(G01Q04.NAOK < 18, 'Menor de idade', 'Adulto'))}"⇨1⇨
-
-Observe acima que a questão tipo Fórmula (Equation) é uma resposta calculada e que o type/scale dela é `*` e que esse tipo requer um ExpressionScript no campo equation **NECESSARIAMENTE** entre {}
-
-! (Dropdown):  
-Qual é o seu nível de escolaridade? [lista suspensa dos níveis]
-
-Q⇨!⇨G01Q05⇨1⇨Qual é o seu nível de escolaridade?⇨⇨pt-BR⇨Y⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A01⇨⇨Ensino fundamental⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A02⇨⇨Ensino médio⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A03⇨⇨Graduação⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A04⇨⇨Pós-graduação⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-G⇨⇨G02⇨1⇨SEÇÃO 2 - Avaliação de Atividades⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-L (List radio):  
-Você participa de atividades de laboratório?  
-( ) Frequentemente  
-( ) Às vezes  
-( ) Raramente  
-( ) Nunca
-
-Q⇨L⇨G02Q01⇨1⇨Você participa de atividades de laboratório?⇨⇨pt-BR⇨N⇨Y⇨⇨0⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A01⇨⇨Frequentemente⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A02⇨⇨Às vezes⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A03⇨⇨Raramente⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A04⇨⇨Nunca⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
- 
-M (Multiple choice):  
-Quais recursos você utiliza?  
-[ ] Livros  
-[ ] Vídeos   
-[ ] Simuladores  
-[ ] Aplicativos
-
-Q⇨M⇨G02Q02⇨1⇨Quais recursos você utiliza para aprender ciência?⇨⇨pt-BR⇨N⇨Y⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ01⇨1⇨Livros ⇨⇨pt-BR⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ02⇨1⇨Vídeos ⇨⇨pt-BR⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ03⇨1⇨Simuladores ⇨⇨pt-BR⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ04⇨1⇨Aplicativos ⇨⇨pt-BR⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
- 
-F (Array – radio):  
-Avalie os recursos digitais utilizados: 
-
-|               | Muito difícil | Difícil | Fácil | Muito fácil |
-|---------------|---------------|---------|-------|-------------| 
-| Vídeos        | ( ) | ( ) | ( )| ( ) |
-| Laboratórios  | ( ) | ( ) | ( )| ( ) |
-| Aplicativos   | ( ) | ( ) | ( )| ( ) |
-
-Q⇨F⇨G02Q03⇨1⇨Avalie os recursos digitais utilizados⇨⇨pt-BR⇨Y⇨N⇨⇨0⇨⇨⇨⇨⇨⇨0
-
-SQ⇨⇨SQ01⇨1⇨Vídeos ⇨⇨pt-BR⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ02⇨1⇨Laboratórios ⇨⇨pt-BR⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-SQ⇨⇨SQ03⇨1⇨Aplicativos ⇨⇨pt-BR⇨⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A01⇨⇨Muito difícil⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A02⇨⇨Difícil⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A03⇨⇨Fácil⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-A⇨0⇨A04⇨⇨Muito fácil⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
- 
-F (Array – dropdown):  
-Igual à questão anterior, mas com valor 1 no campo use_dropdown
-
-G⇨⇨G03⇨1⇨SEÇÃO 3 - Finalização⇨⇨pt-BR⇨⇨⇨⇨⇨⇨⇨⇨⇨⇨
-
-T (Long text):  
-Descreva uma experiência no aprendizado: 
-__________________
-__________________  
-
-Q⇨T⇨G03Q01⇨G02Q01 != "A04"⇨Descreva uma experiência no aprendizado⇨⇨pt-BR⇨N⇨N⇨⇨0⇨⇨⇨⇨⇨⇨
- 
-| (File upload):  
-Envie uma foto ou arquivo relacionado a um experimento
-
-Q⇨|⇨G03Q02⇨1⇨Envie uma foto ou arquivo relacionado a um experimento⇨Aceita imagem, PDF ou Zip⇨pt-BR⇨N⇨N⇨⇨0⇨png, gif, jpg, jpeg, pdf, png, zip⇨⇨⇨⇨⇨
 
 ## Reiteração de algumas diretrizes
 - As questões são obrigatórias por padrão
@@ -316,10 +331,10 @@ Q⇨|⇨G03Q02⇨1⇨Envie uma foto ou arquivo relacionado a um experimento⇨Ac
 - SQxx e Axx reiniciam por questão
 - Relevance → campo relevance (**NAO** fica entre {})
 - Mesma relevance no grupo → aplique no G
-- Validação → a expressão no campo em_validation_q **NÃO** vai entre {}; **cada** expressão no campo em_validation_q_tip **PRECISA** ficar entre {}
+- Validação → a ExpressionScript no campo em_validation_q **NÃO** vai entre {}; se houver ExpressionScripts em em_validation_q_tip, então **cada** expressão nesse campo **PRECISA** ficar entre {}
 - Lista suspensa → use_dropdown=1 
 - regex → coloque uma '/' no início e no fim
-- Questão tipo Fórmula (Equation) → no campo equation, a expressão **PRECISA** ficar entre {}
+- Questão tipo Fórmula (Equation) → no campo equation, a ExpressionScript **PRECISA** ficar entre {}
 - No TSV, o '\t' é separador → NUNCA use '\t' nos textos dos campos 
 - Com esboço DOCX/Markdown → infira ao máximo; evite perguntar
 - Sempre finalize o TSV com G99
@@ -357,7 +372,7 @@ Siga estes passos:
 - Se a IA responder que não possui funcionalidades para gerar arquivos, então salve um arquivo manualmente, assim: 
   - copie o conteúdo do TSV apresentado pela IA no chat 
   - abra o Notepad++ e cole o conteúdo copiado
-  - selecione 'UTF-8' no menu 'Encoding'
+  - selecione 'UTF-8 BOM' no menu 'Encoding'
   - pressione 'Ctrl+H' : o diálogo 'Replace' será aberto
   - na seção 'Search Mode', selecione a opção "Extended"
   - no campo de texto 'Find what', coloque o caractere '⇨' (sem apóstrofo ou aspas)
@@ -366,7 +381,7 @@ Siga estes passos:
   - em seguida, salve o conteúdo editado como um arquivo de texto (.txt)
   - finalmente, importe o arquivo salvo no LimeSurvey
 - Erros na importação?
-  - Caso tenha salvo o arquivo TSV manualmente, verifique se foram seguidas todas as orientações do item anterior e se o encoding é UTF-8  
+  - Caso tenha salvo o arquivo TSV manualmente, verifique se foram seguidas todas as orientações do item anterior e se o encoding do arquivo é 'UTF-8 BOM' (note que 'UTF-8' eventualmente funciona, mas às vezes falha: o encoding correto é 'UTF-8 BOM').
   - Confirme se o chat está realmente usando um LLM poderoso com capacidade de 'reasoning' (veja os modelos recomendados acima)  
   - Certifique-se de que a opção 'Pensar', 'Raciocinar' ou similar está realmente ativada no chat e se o acesso à Web está habilitado  (se não ativadas, habilite essas opções e repita o processo de geração)  
 
