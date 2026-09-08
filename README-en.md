@@ -4,7 +4,9 @@ A prompt that guides a Large Language Model (LLM) to act as an Assistant to gene
 > Although this documentation is in English, the Assistant is **NOT** restricted to this language, as current LLMs can chat with the users in many languages.  
 > Furthermore, the content of the generated TSV file can also be produced in a language other than English.  
 > In other words, this Assistant **is capable** of generating LimeSurvey questionnaires for virtually any language.  
-> PS – At the start of the conversation, the Assistant will ask which language to use.  
+> PS – At the start of the conversation, the Assistant will ask which language to use.
+
+**Want to take a shortcut and read the rest of the introduction later? Skip straight to [how to use](README-en.md#how-to-use).**  
 <br>
 
 ## Motivation
