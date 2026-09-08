@@ -5,6 +5,8 @@ Prompt que orienta um Large Language Model (LLM) a atuar como um Assistente a fi
 > Além disso, o conteúdo do arquivo TSV gerado também pode ser produzido em um idioma diferente do português.  
 > Em outras palavras, este Assistente **é capaz** de gerar questionários do LimeSurvey para praticamente qualquer idioma.  
 > PS - No início da conversa, o Assistente irá perguntar qual é o idioma a ser utilizado.  
+
+**Quer tomar um atalho e deixar para ler o resto da introdução depois? Pule direto para [como usar](README-pt.md#como-usar).**  
 <br>
 
 ## Motivação
